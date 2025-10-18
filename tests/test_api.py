@@ -4,18 +4,18 @@ import json
 import pathlib
 import pytest
 
-# 1) Definir variables de entorno ANTES de importar la app
+# 1) Define environment variables BEFORE importing the app
 TEST_DB_FILE = pathlib.Path("test_api.sqlite")
-# Limpieza preventiva por si quedó de una corrida anterior
+# Preventive cleanup in case it was left from a previous run
 if TEST_DB_FILE.exists():
     TEST_DB_FILE.unlink()
 
 os.environ["DATABASE_URL"] = f"sqlite:///{TEST_DB_FILE}"
 os.environ["AUTH_BEARER_TOKEN"] = "testtoken"
-# Desactivamos la automigración para controlar el schema manualmente en cada test
+# We disable auto-migration to control the schema manually in each test
 os.environ["RUN_DB_MIGRATIONS"] = "0"
 
-# 2) Ahora sí importamos la app y la DB (Config ya leerá las env vars correctas)
+# 2) Now we import the app and the DB (Config will already read the correct env vars)
 from app import create_app
 from app.config import db
 
@@ -29,7 +29,7 @@ def auth_headers(token="testtoken"):
 
 @pytest.fixture(scope="session", autouse=True)
 def clean_sqlite_file():
-    """Limpia el archivo SQLite al final de toda la sesión de tests."""
+    """Cleans up the SQLite file at the end of the entire test session."""
     yield
     if TEST_DB_FILE.exists():
         TEST_DB_FILE.unlink()
@@ -38,8 +38,8 @@ def clean_sqlite_file():
 @pytest.fixture()
 def client():
     """
-    Crea la app y reinicia el esquema (drop_all/create_all) ANTES de cada test.
-    Retorna un test client listo para usar.
+    Creates the app and resets the schema (drop_all/create_all) BEFORE each test.
+    Returns a test client ready to use.
     """
     app = create_app()
     app.config.update(TESTING=True)
@@ -62,7 +62,7 @@ def test_add_to_blacklist_success(client):
     resp = client.post("/blacklists", data=json.dumps(payload), headers=auth_headers())
     assert resp.status_code == 201, resp.get_data(as_text=True)
     body = resp.get_json()
-    assert body["message"] == "Email agregado a la lista negra global"
+    assert body["message"] == "Email added to global blacklist"
 
 
 def test_add_to_blacklist_is_idempotent_on_duplicate(client):
@@ -72,10 +72,10 @@ def test_add_to_blacklist_is_idempotent_on_duplicate(client):
     r1 = client.post("/blacklists", data=json.dumps(payload), headers=auth_headers())
     assert r1.status_code == 201, r1.get_data(as_text=True)
 
-    # Mismo email → respuesta idempotente (200)
+    # Same email → idempotent response (200)
     r2 = client.post("/blacklists", data=json.dumps(payload), headers=auth_headers())
     assert r2.status_code == 200, r2.get_data(as_text=True)
-    assert r2.get_json()["message"] == "Email ya estaba en la lista negra"
+    assert r2.get_json()["message"] == "Email was already on the blacklist"
 
 
 def test_check_blacklist_true_after_post(client):
@@ -118,9 +118,9 @@ def test_unauthorized_without_bearer_token(client):
 def test_validation_errors(client):
     payload = {
         "email": f"bad-{uuid.uuid4().hex[:8]}@test.com",
-        "app_uuid": "not-a-uuid",          # UUID inválido
-        "blocked_reason": "x" * 256,       # demasiado largo (>255)
+        "app_uuid": "not-a-uuid",          # Invalid UUID
+        "blocked_reason": "x" * 256,       # Too long (>255)
     }
     r = client.post("/blacklists", data=json.dumps(payload), headers=auth_headers())
-    # La vista puede fallar por reason largo o por UUID inválido, ambas son 400
+    # The view can fail due to long reason or invalid UUID, both are 400
     assert r.status_code == 400

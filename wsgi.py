@@ -1,6 +1,6 @@
 from app import create_app
 
-# Beanstalk busca 'application'
+# Beanstalk looks for 'application'
 application = create_app()
 
-# Para correr local: `gunicorn wsgi:application -b 0.0.0.0:8000`
+# To run locally: `gunicorn wsgi:application -b 0.0.0.0:8000`

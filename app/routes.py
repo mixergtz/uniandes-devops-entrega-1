@@ -19,7 +19,7 @@ def require_bearer_token():
     return token == current_app.config["AUTH_BEARER_TOKEN"]
 
 def client_ip():
-    # Beanstalk/ELB suele pasar X-Forwarded-For
+    # Beanstalk/ELB usually passes X-Forwarded-For
     xff = request.headers.get("X-Forwarded-For")
     if xff:
         return xff.split(",")[0].strip()
@@ -64,10 +64,10 @@ def add_to_blacklist():
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        # Ya existe: se permite idempotencia (no es un error funcional)
-        return jsonify(message="Email ya estaba en la lista negra"), 200
+        # Already exists: idempotency is allowed (not a functional error)
+        return jsonify(message="Email was already on the blacklist"), 200
 
-    return jsonify(message="Email agregado a la lista negra global"), 201
+    return jsonify(message="Email added to global blacklist"), 201
 
 @api_bp.get("/blacklists/<string:email>")
 def check_blacklist(email: str):

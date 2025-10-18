@@ -1,6 +1,6 @@
 """
-Comandos utilitarios locales para inicializar DB en RDS.
-Uso:
+Local utility commands to initialize DB in RDS.
+Usage:
   export DATABASE_URL=postgresql+psycopg2://USER:PASS@HOST:5432/DB
   python manage.py init-db
 """

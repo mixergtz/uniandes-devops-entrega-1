@@ -11,7 +11,7 @@ def create_app():
     # Init DB
     db.init_app(app)
 
-    # Health check (para Beanstalk/ELB)
+    # Health check (for Beanstalk/ELB)
     @app.get("/health")
     def health():
         return jsonify(status="ok"), 200
@@ -19,8 +19,8 @@ def create_app():
     # Blueprints (API)
     app.register_blueprint(api_bp)
 
-    # Auto-migración simple (create_all) si está habilitado
-    # Útil para la entrega (no usar en prod real).
+    # Simple auto-migration (create_all) if enabled
+    # Useful for delivery (do not use in real production).
     run_migs = os.getenv("RUN_DB_MIGRATIONS", "0")
     if run_migs == "1":
         with app.app_context():
@@ -28,5 +28,5 @@ def create_app():
 
     return app
 
-# Beanstalk busca 'application' en wsgi.py, pero también lo exponemos aquí por si acaso
+# Beanstalk looks for 'application' in wsgi.py, but we also expose it here just in case
 application = create_app()
