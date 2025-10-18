@@ -1,0 +1,26 @@
+[project]
+name = "blacklist-service"
+version = "0.1.0"
+requires-python = ">=3.8"
+
+dependencies = [
+  "Flask==2.3.3",
+  "Flask-RESTful==0.3.10",
+  "Flask-SQLAlchemy==3.1.1",
+  "Flask-Marshmallow==1.2.1",
+  "marshmallow==3.21.3",
+  "marshmallow-sqlalchemy==1.1.0",
+  "psycopg2-binary==2.9.9",
+  "gunicorn==21.2.0",
+  "Werkzeug==3.0.3",
+]
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.uv]
+# uv usará [project] para instalar dependencias

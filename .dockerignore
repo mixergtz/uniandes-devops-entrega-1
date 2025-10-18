@@ -1,0 +1,34 @@
+# Python / build
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Entornos
+.venv/
+.env
+.env.*
+*.env
+
+# VCS / OS
+.git
+.gitignore
+.gitattributes
+.idea/
+.vscode/
+.DS_Store
+
+# Tests / artefactos
+.coverage
+.pytest_cache/
+htmlcov/
+.smoke.sqlite
+test_*.sqlite
+*.log
+
+# Node/otros (por si acaso)
+node_modules/
