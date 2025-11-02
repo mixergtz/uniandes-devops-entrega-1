@@ -1,0 +1,26 @@
+version: 0.2
+
+env:
+  variables:
+    AUTH_BEARER_TOKEN: "dev-token-123"
+    DATABASE_URL: "sqlite:///ci.db"
+    RUN_DB_MIGRATIONS: "1"
+
+phases:
+  install:
+    commands:
+      - curl -LsSf https://astral.sh/uv/install.sh | sh
+      - export PATH="$HOME/.local/bin:$PATH"
+      - uv --version
+      - uv sync --no-dev=false
+  pre_build:
+    commands:
+      - echo "Running tests..."
+      - uv run pytest -v
+  build:
+    commands:
+      - echo "Packaging artifact..."
+      - zip -r app.zip . -x "*.git*" -x ".venv/*" -x "__pycache__/*"
+artifacts:
+  files:
+    - app.zip
