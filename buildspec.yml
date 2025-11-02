@@ -12,7 +12,7 @@ phases:
       - curl -LsSf https://astral.sh/uv/install.sh | sh
       - export PATH="$HOME/.local/bin:$PATH"
       - uv --version
-      - uv sync --no-dev=false
+      - uv sync --no-dev --frozen
   pre_build:
     commands:
       - echo "Running tests..."
