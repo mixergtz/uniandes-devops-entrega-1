@@ -13,6 +13,7 @@ phases:
       - export PATH="$HOME/.local/bin:$PATH"
       - uv --version
       - uv sync --no-dev --frozen
+      - uv run python -m pip install pytest
   pre_build:
     commands:
       - echo "Running tests..."
