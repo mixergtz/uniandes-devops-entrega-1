@@ -35,11 +35,7 @@ phases:
       - docker run --privileged --rm tonistiigi/binfmt --install all
       - docker buildx create --use
       - echo "Construyendo y haciendo push de la imagen..."
-      - docker buildx build \
-          --platform linux/arm64 \
-          -t $IMAGE_URI:$COMMIT_TAG \
-          -t $IMAGE_URI:latest \
-          --push .
+      - docker buildx build --platform linux/arm64 -t $IMAGE_URI:$COMMIT_TAG -t $IMAGE_URI:latest --push .
 
   post_build:
     commands:
