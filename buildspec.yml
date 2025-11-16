@@ -2,25 +2,51 @@ version: 0.2
 
 env:
   variables:
-    AUTH_BEARER_TOKEN: "dev-token-123"
-    DATABASE_URL: "sqlite:///ci.db"
-    RUN_DB_MIGRATIONS: "1"
+    AWS_REGION: us-east-2
+    ACCOUNT_ID: "558627362683"
+    ECR_REPO_NAME: "mixergtz/uniandes-blacklist-service"
+    CONTAINER_NAME: "uniandes-blacklist-container"
 
 phases:
   install:
     commands:
+      - echo "Instalando uv..."
       - curl -LsSf https://astral.sh/uv/install.sh | sh
       - export PATH="$HOME/.local/bin:$PATH"
-      - uv --version
-      - uv sync --dev
+      - uv --version || echo "uv instalado"
+
   pre_build:
     commands:
-      - echo "Running tests..."
+      - echo "Login en ECR..."
+      - IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+      - echo "Instalando dependencias del proyecto..."
+      - uv sync --no-dev --frozen
+      - echo "Ejecutando pruebas unitarias..."
       - uv run pytest -v
+      - echo "Configurando tags de la imagen..."
+      - COMMIT_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
+      - echo "IMAGE_URI=$IMAGE_URI"
+      - echo "COMMIT_TAG=$COMMIT_TAG"
+
   build:
     commands:
-      - echo "Packaging artifact..."
-      - zip -r app.zip . -x "*.git*" -x ".venv/*" -x "__pycache__/*"
+      - echo "Configurando buildx para ARM64..."
+      - docker run --privileged --rm tonistiigi/binfmt --install all
+      - docker buildx create --use
+      - echo "Construyendo y haciendo push de la imagen..."
+      - docker buildx build \
+          --platform linux/arm64 \
+          -t $IMAGE_URI:$COMMIT_TAG \
+          -t $IMAGE_URI:latest \
+          --push .
+
+  post_build:
+    commands:
+      - echo "Generando imagedefinitions.json para ECS..."
+      - printf '[{"name":"%s","imageUri":"%s"}]' "$CONTAINER_NAME" "$IMAGE_URI:$COMMIT_TAG" > imagedefinitions.json
+      - cat imagedefinitions.json
+
 artifacts:
   files:
-    - app.zip
+    - imagedefinitions.json
