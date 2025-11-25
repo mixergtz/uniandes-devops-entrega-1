@@ -48,16 +48,7 @@ phases:
 
 artifacts:
   files:
-    - '**/*'
-    - imagedefinitions.json
-    - imageDetail.json
     - taskdef.json
     - appspec.json
-  secondary-artifacts:
-    DefinitionArtifact:
-      files:
-        - appspec.json
-        - taskdef.json
-    ImageArtifact:
-      files:
-        - imageDetail.json
+    - imageDetail.json
+  discard-paths: yes
