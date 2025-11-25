@@ -20,12 +20,24 @@
         {
           "name": "NEW_RELIC_CONFIG_FILE",
           "value": "/app/newrelic.ini"
+        },
+        {
+          "name": "RUN_DB_MIGRATIONS",
+          "value": "1"
         }
       ],
       "secrets": [
         {
           "name": "NEW_RELIC_LICENSE_KEY",
           "valueFrom": "arn:aws:ssm:us-east-2:558627362683:parameter/newrelic-license-key"
+        },
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:ssm:us-east-2:558627362683:parameter/blacklist-service/DATABASE_URL"
+        },
+        {
+          "name": "AUTH_BEARER_TOKEN",
+          "valueFrom": "arn:aws:ssm:us-east-2:558627362683:parameter/blacklist-service/AUTH_BEARER_TOKEN"
         }
       ]
     }
