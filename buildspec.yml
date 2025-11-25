@@ -31,7 +31,7 @@ phases:
 
   build:
     commands:
-      - echo "Configurando buildx para ARM64..."
+      - echo "Configurando buildx para ARM64.."
       - docker run --privileged --rm tonistiigi/binfmt --install all
       - docker buildx create --use
       - echo "Construyendo y haciendo push de la imagen..."
