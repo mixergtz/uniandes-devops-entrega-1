@@ -11,7 +11,23 @@
       ],
       "image": "<IMAGE1_NAME>",
       "essential": true,
-      "name": "uniandes-blacklist-container"
+      "name": "uniandes-blacklist-container",
+      "environment": [
+        {
+          "name": "NEW_RELIC_APP_NAME",
+          "value": "blacklist-service"
+        },
+        {
+          "name": "NEW_RELIC_CONFIG_FILE",
+          "value": "/app/newrelic.ini"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "NEW_RELIC_LICENSE_KEY",
+          "valueFrom": "arn:aws:ssm:us-east-2:558627362683:parameter/newrelic-license-key"
+        }
+      ]
     }
   ],
   "requiresCompatibilities": [

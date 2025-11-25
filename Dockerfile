@@ -12,6 +12,11 @@ ENV PATH="/app/.venv/bin:${PATH}"
 
 COPY . .
 
+# Copy New Relic configuration
+COPY newrelic.ini .
+
 ENV PORT=5000
 EXPOSE 5000
-CMD ["gunicorn", "wsgi:application", "-b", "0.0.0.0:5000", "--timeout", "120", "--workers", "2"]
+
+# Use New Relic's admin script to wrap gunicorn
+CMD ["newrelic-admin", "run-program", "gunicorn", "wsgi:application", "-b", "0.0.0.0:5000", "--timeout", "120", "--workers", "2"]

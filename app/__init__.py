@@ -1,8 +1,13 @@
+import os
+import newrelic.agent
+
+# Initialize New Relic agent
+newrelic.agent.initialize()
+
 from flask import Flask, jsonify
 from .config import Config, db
 from .routes import api_bp
 from .models import BlacklistEntry
-import os
 
 def create_app():
     app = Flask(__name__)
